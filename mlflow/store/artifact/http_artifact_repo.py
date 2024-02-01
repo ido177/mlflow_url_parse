@@ -109,7 +109,7 @@ class HttpArtifactRepository(ArtifactRepository, MultipartUploadMixin):
                 for chunk in resp.iter_content(chunk_size=chunk_size):
                     f.write(chunk)
         except IsADirectoryError:
-            file_name = endpoint.split('/')[-1]
+            file_name = endpoint.split('/')[-2]
             with open(os.path.join(local_path, file_name), "wb") as f:
                 chunk_size = 1024 * 1024  # 1 MB
                 for chunk in resp.iter_content(chunk_size=chunk_size):
