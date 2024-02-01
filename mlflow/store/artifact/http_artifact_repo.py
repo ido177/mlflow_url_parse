@@ -100,7 +100,7 @@ class HttpArtifactRepository(ArtifactRepository, MultipartUploadMixin):
         return sorted(file_infos, key=lambda f: f.path)
 
     def _download_file(self, remote_file_path, local_path):
-        endpoint = posixpath.join("/", remote_file_path)
+        endpoint = posixpath.join("/", remote_file_path).rstrip('/')
         resp = http_request(self._host_creds, endpoint, "GET", stream=True)
         augmented_raise_for_status(resp)
         with open(local_path, "wb") as f:
