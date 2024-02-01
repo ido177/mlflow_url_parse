@@ -104,7 +104,7 @@ class HttpArtifactRepository(ArtifactRepository, MultipartUploadMixin):
         resp = http_request(self._host_creds, endpoint, "GET", stream=True)
         augmented_raise_for_status(resp)
         try:
-            with open(local_path), "wb") as f:
+            with open(local_path, "wb") as f:
                 chunk_size = 1024 * 1024  # 1 MB
                 for chunk in resp.iter_content(chunk_size=chunk_size):
                     f.write(chunk)
