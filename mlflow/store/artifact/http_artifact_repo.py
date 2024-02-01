@@ -103,10 +103,17 @@ class HttpArtifactRepository(ArtifactRepository, MultipartUploadMixin):
         endpoint = posixpath.join("/", remote_file_path).rstrip('/')
         resp = http_request(self._host_creds, endpoint, "GET", stream=True)
         augmented_raise_for_status(resp)
-        with open(os.path.join(local_path, 'model.pkl'), "wb") as f:
-            chunk_size = 1024 * 1024  # 1 MB
-            for chunk in resp.iter_content(chunk_size=chunk_size):
-                f.write(chunk)
+        try:
+            with open(local_path), "wb") as f:
+                chunk_size = 1024 * 1024  # 1 MB
+                for chunk in resp.iter_content(chunk_size=chunk_size):
+                    f.write(chunk)
+        except IsADirectoryError:
+            file_name = endpoint.split('/')[-1]
+            with open(os.path.join(local_path, file_name), "wb") as f:
+                chunk_size = 1024 * 1024  # 1 MB
+                for chunk in resp.iter_content(chunk_size=chunk_size):
+                    f.write(chunk)
 
     def delete_artifacts(self, artifact_path=None):
         endpoint = posixpath.join("/", artifact_path) if artifact_path else "/"
