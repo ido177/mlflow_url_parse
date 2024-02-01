@@ -101,7 +101,6 @@ class HttpArtifactRepository(ArtifactRepository, MultipartUploadMixin):
 
     def _download_file(self, remote_file_path, local_path):
         endpoint = posixpath.join("/", remote_file_path).rstrip('/')
-        file_name = remote_file_path.rstrip('/').split('/')[-2]
         resp = http_request(self._host_creds, endpoint, "GET", stream=True)
         augmented_raise_for_status(resp)
         try:
@@ -110,7 +109,7 @@ class HttpArtifactRepository(ArtifactRepository, MultipartUploadMixin):
                 for chunk in resp.iter_content(chunk_size=chunk_size):
                     f.write(chunk)
         except IsADirectoryError:
-            with open(os.path.join(local_path, file_name), "wb") as file:
+            with open(os.path.join(local_path, 'model.pkl'), "wb") as file:
                 chunk_size = 1024 * 1024  # 1 MB
                 for chunk in resp.iter_content(chunk_size=chunk_size):
                     file.write(chunk)
