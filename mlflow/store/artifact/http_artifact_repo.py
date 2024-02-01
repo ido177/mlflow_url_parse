@@ -108,17 +108,12 @@ class HttpArtifactRepository(ArtifactRepository, MultipartUploadMixin):
                 chunk_size = 1024 * 1024  # 1 MB
                 for chunk in resp.iter_content(chunk_size=chunk_size):
                     f.write(chunk)
-        except Exception as e:
-            print(endpoint)
-            if "Is a directory" in str(e):
-                file_name = endpoint.split('/')[-1]
-                print(file_name)
-                with open(os.path.join(local_path, file_name), "wb") as f:
-                    chunk_size = 1024 * 1024  # 1 MB
-                    for chunk in resp.iter_content(chunk_size=chunk_size):
-                        f.write(chunk)
-            else:
-                raise Exception
+        except IsADirectoryError:
+            file_name = endpoint.split('/')[-1]
+            with open(os.path.join(local_path, file_name), "wb") as f:
+                chunk_size = 1024 * 1024  # 1 MB
+                for chunk in resp.iter_content(chunk_size=chunk_size):
+                    f.write(chunk)
 
     def delete_artifacts(self, artifact_path=None):
         endpoint = posixpath.join("/", artifact_path) if artifact_path else "/"
