@@ -207,12 +207,12 @@ class ArtifactRepository:
                     f"variable {MLFLOW_ENABLE_ARTIFACTS_PROGRESS_BAR} to false"
                 )
             for f in as_completed(futures):
-                # try:
-                f.result()
-                pbar.update()
-                # except Exception as e:
-                #     path = futures[f]
-                #     failed_downloads[path] = e
+                try:
+                    f.result()
+                    pbar.update()
+                except Exception as e:
+                    path = futures[f]
+                    failed_downloads[path] = e
 
         if failed_downloads:
             template = "##### File {path} #####\n{error}"
